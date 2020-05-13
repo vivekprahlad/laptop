@@ -1,0 +1,52 @@
+#!/bin/sh
+brew bundle --file=- <<EOF
+
+# Utilities
+brew "direnv"
+brew "ffmpeg"
+brew "jq"
+brew "lame"
+brew "media-info"
+brew "mas"
+brew "mr"
+brew "youtube-dl"
+brew "xz"
+brew "z"
+
+# Build tools
+brew "ant"
+brew "maven"
+
+# Data stores
+brew "mysql"
+
+cask_args appdir: '/Applications'
+cask "adobe-acrobat-reader"
+cask "blender"
+cask "brackets"
+cask "virtualbox"
+cask "dash"
+cask "docker"
+cask "firefox"
+cask "flycut"
+cask "google-chrome"
+cask "iterm2"
+cask "karabiner-elements"
+cask "postico"
+cask "postgres"
+cask "screenflow"
+cask "shiftit"
+cask "sketch"
+cask "skype"
+cask "steam"
+cask "tunnelblick"
+cask "vagrant"
+cask "viscosity"
+
+#App store apps
+mas 'DaisyDisk', id: 411643860
+mas 'Slack', id: 803453959
+mas 'The Unarchiver', id: 425424353
+mas 'iBooks Author', id: 490152466
+
+EOF
