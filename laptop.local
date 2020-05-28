@@ -9,9 +9,11 @@ brew "lame"
 brew "media-info"
 brew "mas"
 brew "mr"
+brew "wget"
 brew "youtube-dl"
 brew "xz"
 brew "z"
+brew "zsh-completions"
 
 # Build tools
 brew "ant"
@@ -32,6 +34,7 @@ cask "flycut"
 cask "google-chrome"
 cask "iterm2"
 cask "karabiner-elements"
+cask "notion"
 cask "postico"
 cask "postgres"
 cask "screenflow"
@@ -42,11 +45,15 @@ cask "steam"
 cask "tunnelblick"
 cask "vagrant"
 cask "viscosity"
+cask "vlc"
+cask "zoom"
 
 #App store apps
 mas 'DaisyDisk', id: 411643860
+mas 'Haskell', id: 841285201
+mas 'iBooks Author', id: 490152466
+mas 'OmniGraffle', id: 1142578753 
 mas 'Slack', id: 803453959
 mas 'The Unarchiver', id: 425424353
-mas 'iBooks Author', id: 490152466
-
+mas 'WhatsApp', id: 1147396723
 EOF
