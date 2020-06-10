@@ -2,6 +2,7 @@
 brew bundle --file=- <<EOF
 
 # Utilities
+brew "akamai"
 brew "direnv"
 brew "ffmpeg"
 brew "jq"
