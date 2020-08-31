@@ -58,3 +58,33 @@ mas 'Slack', id: 803453959
 mas 'The Unarchiver', id: 425424353
 mas 'WhatsApp', id: 1147396723
 EOF
+
+add_or_update_asdf_plugin "erlang" "https://github.com/asdf-vm/asdf-erlang.git"
+add_or_update_asdf_plugin "elixir" "https://github.com/asdf-vm/asdf-elixir.git"
+add_or_update_asdf_plugin "flutter" "https://github.com/oae/asdf-flutter.git"
+add_or_update_asdf_plugin "golang" "https://github.com/kennyp/asdf-golang.git"
+add_or_update_asdf_plugin "haxe" "https://github.com/asdf-community/asdf-haxe.git"
+add_or_update_asdf_plugin "istioctl" "https://github.com/rafik8/asdf-istioctl.git"
+add_or_update_asdf_plugin "java" "https://github.com/halcyon/asdf-java.git"
+add_or_update_asdf_plugin "kubectl" "https://github.com/Banno/asdf-kubectl.git"
+add_or_update_asdf_plugin "python" "https://github.com/danhper/asdf-python.git"
+add_or_update_asdf_plugin "terraform" "https://github.com/Banno/asdf-hashicorp.git"
+
+fancy_echo "Installing latest Erlang ..."
+install_asdf_language "erlang"
+fancy_echo "Installing latest Elixir ..."
+install_asdf_language "elixir"
+fancy_echo "Installing latest Flutter ..."
+install_asdf_language "flutter"
+fancy_echo "Installing latest Golang ..."
+install_asdf_language "golang"
+fancy_echo "Installing latest Haxe ..."
+install_asdf_language "haxe"
+fancy_echo "Installing latest Istioctl ..."
+install_asdf_language "istioctl"
+fancy_echo "Installing latest Kubectl ..."
+install_asdf_language "kubectl"
+fancy_echo "Installing latest Python ..."
+install_asdf_language "python"
+fancy_echo "Installing latest Terraform ..."
+install_asdf_language "terraform"
