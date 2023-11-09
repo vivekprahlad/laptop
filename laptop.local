@@ -1,0 +1,103 @@
+#!/bin/sh
+brew bundle --file=- <<EOF
+
+# Utilities
+brew "azure-cli"
+brew "cmake"
+brew "direnv"
+brew "ffmpeg"
+brew "graphviz"
+brew "grpcurl"
+brew "hyperkit"
+brew "jq"
+brew "lame"
+brew "media-info"
+brew "mas"
+brew "mr"
+brew "mvn"
+brew "openssl"
+brew "wget"
+brew "youtube-dl"
+brew "xz"
+brew "z"
+brew "zsh-completions"
+
+# Build tools
+brew "ant"
+brew "maven"
+
+# Data stores
+#brew "mysql"
+
+cask_args appdir: '/Applications'
+cask "adobe-acrobat-reader"
+cask "blender"
+cask "virtualbox"
+#cask "firefox"
+cask "flycut"
+#cask "google-chrome"
+cask "iterm2"
+cask "karabiner-elements"
+#cask "notion"
+cask "postico"
+cask "postgres"
+cask "screenflow"
+cask "vagrant"
+cask "vlc"
+#cask "zoom"
+
+#App store apps
+mas 'DaisyDisk', id: 411643860
+mas 'Haskell', id: 841285201
+mas 'iBooks Author', id: 490152466
+mas 'OmniGraffle', id: 1142578753 
+mas 'Slack', id: 803453959
+mas 'The Unarchiver', id: 425424353
+mas 'WhatsApp', id: 1147396723
+EOF
+
+
+add_or_update_asdf_plugin "clojure" "https://github.com/halcyon/asdf-clojure.git"
+add_or_update_asdf_plugin "erlang" "https://github.com/asdf-vm/asdf-erlang.git"
+add_or_update_asdf_plugin "elixir" "https://github.com/asdf-vm/asdf-elixir.git"
+add_or_update_asdf_plugin "golang" "https://github.com/kennyp/asdf-golang.git"
+add_or_update_asdf_plugin "gradle" "https://github.com/rfrancis/asdf-gradle.git"
+add_or_update_asdf_plugin "haskell" "https://github.com/vic/asdf-haskell.git"
+add_or_update_asdf_plugin "haxe" "https://github.com/asdf-community/asdf-haxe.git"
+add_or_update_asdf_plugin "java" "https://github.com/halcyon/asdf-java.git"
+add_or_update_asdf_plugin "kubectl" "https://github.com/Banno/asdf-kubectl.git"
+add_or_update_asdf_plugin "leiningen" "https://github.com/miorimmax/asdf-lein.git"
+add_or_update_asdf_plugin "mysql" "https://github.com/iroddis/asdf-mysql.git"
+add_or_update_asdf_plugin "python" "https://github.com/danhper/asdf-python.git"
+add_or_update_asdf_plugin "terraform" "https://github.com/Banno/asdf-hashicorp.git"
+add_or_update_asdf_plugin "yarn" "https://github.com/twuni/asdf-yarn.git"
+
+fancy_echo "Installing latest Clojure ..."
+install_asdf_language "clojure"
+fancy_echo "Installing latest Erlang ..."
+export KERL_CONFIGURE_OPTIONS="--without-javac --with-ssl=/usr/local/opt/openssl@1.1"
+install_asdf_language "erlang"
+fancy_echo "Installing latest Elixir ..."
+install_asdf_language "elixir"
+fancy_echo "Installing latest Golang ..."
+install_asdf_language "golang"
+fancy_echo "Installing latest Gradle ..."
+install_asdf_language "gradle"
+fancy_echo "Installing latest Haxe ..."
+install_asdf_language "haxe"
+fancy_echo "Installing latest Haskell ..."
+install_asdf_language "haskell"
+fancy_echo "Installing latest Haxe ..."
+install_asdf_language "haxe"
+fancy_echo "Installing latest Kubectl ..."
+install_asdf_language "kubectl"
+fancy_echo "Installing latest Leiningen ..."
+install_asdf_language "leiningen"
+fancy_echo "Installing latest MySql ..."
+install_asdf_language "mysql"
+fancy_echo "Installing latest Python ..."
+install_asdf_language "python"
+fancy_echo "Installing latest Terraform ..."
+install_asdf_language "terraform"
+brew uninstall postgresql@14
+brew uninstall redis
