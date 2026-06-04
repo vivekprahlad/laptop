@@ -1,6 +1,7 @@
 #!/bin/sh
-# Personal environment setup: Claude Code, Starship, MesloLGS NF font, tmux
-# (config + Catppuccin plugin), iTerm2 colours/settings, and a clean ~/.zshrc.
+# Personal environment setup: Claude Code, Pencil (pencil.dev), Starship,
+# MesloLGS NF font, tmux (config + Catppuccin plugin), iTerm2 colours/settings,
+# and a clean ~/.zshrc.
 #
 # Idempotent and non-destructive: each step skips work already done and backs up
 # anything it replaces (as <file>.backup.<timestamp>). Safe to re-run.
@@ -88,5 +89,31 @@ say "Installing clean ~/.zshrc ..."
 backup "$HOME/.zshrc"
 cp "$SCRIPT_DIR/zsh/zshrc" "$HOME/.zshrc"
 echo "  installed (restart your shell to apply)"
+
+# 7. Pencil design app (pencil.dev — no Homebrew cask, install from DMG)
+say "Installing Pencil (pencil.dev) ..."
+if [ -d "/Applications/Pencil.app" ]; then
+  echo "  Pencil already installed; skipping"
+else
+  if [ "$(uname -m)" = "arm64" ]; then
+    pencil_url="https://pencil.dev/download/Pencil-mac-arm64.dmg"
+  else
+    pencil_url="https://pencil.dev/download/Pencil-mac-x64.dmg"
+  fi
+  pencil_dmg="$(mktemp -d)/Pencil.dmg"
+  pencil_mnt="$(mktemp -d)"
+  echo "  downloading $pencil_url"
+  curl -fsSL "$pencil_url" -o "$pencil_dmg"
+  hdiutil attach "$pencil_dmg" -nobrowse -quiet -mountpoint "$pencil_mnt"
+  pencil_app="$(find "$pencil_mnt" -maxdepth 1 -name '*.app' -print | head -1)"
+  if [ -n "$pencil_app" ]; then
+    cp -R "$pencil_app" /Applications/
+    echo "  installed to /Applications/Pencil.app"
+  else
+    echo "  WARNING: no .app found inside the Pencil DMG"
+  fi
+  hdiutil detach "$pencil_mnt" -quiet
+  rm -f "$pencil_dmg"
+fi
 
 say "Personal setup complete."
