@@ -1,0 +1,66 @@
+# ~/.zshrc — clean zsh setup (no framework)
+# Managed by the laptop setup script. Work-specific config intentionally omitted.
+
+# --- Homebrew (first, so brew-installed tools are on PATH) ---
+if [ -x /opt/homebrew/bin/brew ]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [ -x /usr/local/bin/brew ]; then
+  eval "$(/usr/local/bin/brew shellenv)"
+fi
+
+# --- PATH ---
+export PATH="$HOME/.bin:$HOME/.local/bin:$PATH"
+export PATH="$HOME/.local/share/mise/shims:$PATH"
+
+# --- Environment ---
+export EDITOR='nano'
+export VISUAL='nano'
+export ERL_AFLAGS="-kernel shell_history enabled"   # Erlang shell history
+
+# 1Password SSH agent
+export SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+
+# --- History ---
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=50000
+SAVEHIST=50000
+setopt APPEND_HISTORY          # append, don't overwrite
+setopt INC_APPEND_HISTORY      # write immediately, not on exit
+setopt SHARE_HISTORY           # share across sessions
+
+# --- Completion ---
+autoload -Uz compinit && compinit
+[[ $commands[kubectl] ]] && source <(kubectl completion zsh)
+
+# --- Functions ---
+mkcd() { mkdir -p "$1" && cd "$1"; }
+
+backup_with_timestamp() {
+  BACKUP_NAME="$1_backup_$(date +%Y-%m-%d_%H:%M:%S)"
+  cp -r "$1" "$BACKUP_NAME"
+  echo "Created backup at \"./$BACKUP_NAME\""
+  unset BACKUP_NAME
+}
+
+# Claude Code — pin Node via mise (adjust the version to taste)
+claude() { MISE_NODE_VERSION=24.4.1 command claude "$@"; }
+claude_yolo() { MISE_NODE_VERSION=24.4.1 command claude --dangerously-skip-permissions "$@"; }
+
+# --- Aliases ---
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias ls="ls -G"
+alias c="claude"
+alias tm='tmux new-session -A -s "$(basename "$PWD")"'
+alias ulc='git commit --amend --date="now" --no-edit'
+alias ssh-perms="cd ~ && chmod 600 ~/.ssh/* && chmod 700 ~/.ssh && chmod 644 ~/.ssh/*.pub"
+alias rr='touch .mrconfig && ls -d */ | sed "s/.$//" | xargs -I {} mr register {}'
+
+# --- Tool hooks (guarded so a missing tool can't break shell startup) ---
+command -v mise   >/dev/null && eval "$(mise activate zsh)"
+command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# --- Prompt (keep last) ---
+command -v starship >/dev/null && eval "$(starship init zsh)"
