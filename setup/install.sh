@@ -174,6 +174,24 @@ if command -v nwave-ai >/dev/null 2>&1; then
   nwave-ai install || echo "  WARNING: nWave re-apply failed; run 'nwave-ai install' manually"
 fi
 
+# 11c. Document the nWave/skills.sh clobber in ~/.claude/CLAUDE.md so a fresh
+# provision carries the guidance forward. Runs after citypaul (step 11) rewrites
+# CLAUDE.md, so the note re-applies on every provision. Idempotent via a marker.
+say "Adding nWave/skills.sh guard to ~/.claude/CLAUDE.md ..."
+nwave_guard_marker="nWave + skills.sh ownership guard"
+claude_md="$HOME/.claude/CLAUDE.md"
+if [ -f "$claude_md" ] && grep -qF "$nwave_guard_marker" "$claude_md"; then
+  echo "  guard already present; skipping"
+else
+  mkdir -p "$HOME/.claude"
+  cat >> "$claude_md" <<'EOF'
+
+<!-- >>> nWave + skills.sh ownership guard (added by laptop setup; edit or remove freely) >>> -->
+> ⚠️ **`npx skills` and the nWave installer both own `~/.claude/skills/`.** `npx skills add ...` snapshots that directory (to `skills.pre-skills-sh.<timestamp>`) and re-materializes ONLY its tracked set, which **deletes nWave's `nw-*` skills**. If nWave skills go missing after any skills.sh run, restore them with: `nwave-ai install`. The provisioning repo (`setup/install.sh` step 11b) already re-applies nWave after its `npx skills` step.
+EOF
+  echo "  appended guard to CLAUDE.md"
+fi
+
 # 12. context-mode Claude Code plugin (mksglu/context-mode)
 # MCP server that keeps raw tool output out of the context window and tracks
 # session state in SQLite. Installed via the Claude Code plugin marketplace.
