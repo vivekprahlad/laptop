@@ -46,6 +46,16 @@ backup_with_timestamp() {
 claude() { MISE_NODE_VERSION=24.4.1 command claude "$@"; }
 claude_yolo() { MISE_NODE_VERSION=24.4.1 command claude --dangerously-skip-permissions "$@"; }
 
+# Trail of Bits Claude aliases (claude-yolo maps to the claude_yolo function above;
+# claude-local targets a local LM Studio server — requires LM Studio running).
+alias claude-yolo='claude_yolo'
+claude-local() {
+  ANTHROPIC_BASE_URL=http://localhost:1234 \
+  ANTHROPIC_AUTH_TOKEN=lmstudio \
+  CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 \
+  MISE_NODE_VERSION=24.4.1 command claude --model qwen/qwen3-coder-next "$@"
+}
+
 # --- Aliases ---
 alias ..="cd .."
 alias ...="cd ../.."

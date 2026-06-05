@@ -2,7 +2,8 @@
 # Personal environment setup: Claude Code, the citypaul/.dotfiles Claude config
 # (CLAUDE.md + skills + commands + agents), Pencil (pencil.dev),
 # Starship, MesloLGS NF font, tmux (config + Catppuccin plugin), Hammerspoon
-# config, iTerm2 colours/settings, a clean ~/.zshrc, a global git config, and
+# config, iTerm2 colours/settings, a clean ~/.zshrc, a global git config, the
+# context-mode Claude Code plugin, the Trail of Bits Claude Code config, and
 # SSH/git identities provisioned from 1Password.
 #
 # Idempotent and non-destructive: each step skips work already done and backs up
@@ -162,7 +163,139 @@ else
   echo "  WARNING: citypaul Claude config install failed; continuing"
 fi
 
-# 12. SSH/git identities from the private 1Password manifest
+# 12. context-mode Claude Code plugin (mksglu/context-mode)
+# MCP server that keeps raw tool output out of the context window and tracks
+# session state in SQLite. Installed via the Claude Code plugin marketplace.
+# Guarded and idempotent: skips the marketplace add / plugin install if already
+# present, and a failure here doesn't abort the remaining setup.
+say "Installing context-mode Claude Code plugin ..."
+if command -v claude >/dev/null 2>&1; then
+  if claude plugin marketplace list 2>/dev/null | grep -q 'context-mode'; then
+    echo "  context-mode marketplace already added; skipping"
+  else
+    claude plugin marketplace add mksglu/context-mode || \
+      echo "  WARNING: failed to add context-mode marketplace; continuing"
+  fi
+  if claude plugin list 2>/dev/null | grep -q 'context-mode'; then
+    echo "  context-mode plugin already installed; skipping"
+  else
+    claude plugin install context-mode@context-mode || \
+      echo "  WARNING: failed to install context-mode plugin; continuing"
+  fi
+else
+  echo "  claude not found; skipping context-mode plugin"
+fi
+
+# 13. Trail of Bits Claude Code config (trailofbits/claude-code-config)
+# Opinionated security-focused defaults. Scripted non-destructively: prerequisite
+# CLI tools, a jq merge of ToB's keys into the existing settings.json (preserving
+# the nWave hooks + PATH), the statusline script, the review-pr/fix-issue
+# commands, and ToB's global standards APPENDED (not overwritten) to CLAUDE.md.
+# Runs after citypaul (step 11) so the CLAUDE.md append lands on the final file
+# and re-applies on every provision. Guarded so any failure continues the setup.
+tob_base="https://raw.githubusercontent.com/trailofbits/claude-code-config/main"
+
+say "Installing Trail of Bits prerequisite tools ..."
+for f in ast-grep shellcheck shfmt actionlint zizmor macos-trash ripgrep fd pnpm; do
+  brew install "$f" || echo "  WARNING: brew install $f failed; continuing"
+done
+if command -v uv >/dev/null 2>&1; then
+  for t in ruff ty pip-audit; do
+    uv tool install "$t" || echo "  WARNING: uv tool install $t failed; continuing"
+  done
+else
+  echo "  uv not found; skipping ruff/ty/pip-audit"
+fi
+if command -v cargo >/dev/null 2>&1; then
+  cargo install cargo-deny || echo "  WARNING: cargo install cargo-deny failed; continuing"
+else
+  echo "  cargo (Rust toolchain) not found; skipping cargo-deny"
+fi
+if command -v npm >/dev/null 2>&1; then
+  npm install -g oxlint agent-browser || echo "  WARNING: npm global install failed; continuing"
+else
+  echo "  npm not found; skipping oxlint/agent-browser"
+fi
+
+say "Installing Trail of Bits statusline + commands ..."
+mkdir -p "$HOME/.claude/commands"
+if curl -fsSL "$tob_base/scripts/statusline.sh" -o "$HOME/.claude/statusline.sh"; then
+  chmod +x "$HOME/.claude/statusline.sh"
+  echo "  installed ~/.claude/statusline.sh"
+else
+  echo "  WARNING: failed to fetch statusline.sh; continuing"
+fi
+for cmd in review-pr fix-issue; do
+  curl -fsSL "$tob_base/commands/$cmd.md" -o "$HOME/.claude/commands/$cmd.md" \
+    && echo "  installed ~/.claude/commands/$cmd.md" \
+    || echo "  WARNING: failed to fetch $cmd.md; continuing"
+done
+
+say "Merging Trail of Bits keys into ~/.claude/settings.json ..."
+tob_settings="$(mktemp)"
+if curl -fsSL "$tob_base/settings.json" -o "$tob_settings"; then
+  settings="$HOME/.claude/settings.json"
+  if [ ! -f "$settings" ]; then
+    mkdir -p "$HOME/.claude"
+    cp "$tob_settings" "$settings"
+    echo "  wrote settings.json (none existed)"
+  elif command -v jq >/dev/null 2>&1; then
+    merged="$(mktemp)"
+    # Set ToB's opinionated scalars + statusLine; union the deny rules; merge env
+    # with existing keys winning (preserves PATH); strip any previously-injected
+    # ToB Bash guard hooks (by message) then re-append, so re-runs don't stack.
+    if jq --slurpfile tob "$tob_settings" '
+        ($tob[0]) as $t
+        | .cleanupPeriodDays = $t.cleanupPeriodDays
+        | .enableAllProjectMcpServers = $t.enableAllProjectMcpServers
+        | .alwaysThinkingEnabled = $t.alwaysThinkingEnabled
+        | .statusLine = $t.statusLine
+        | .env = (($t.env // {}) + (.env // {}))
+        | .permissions = (.permissions // {})
+        | .permissions.deny = (((.permissions.deny // []) + ($t.permissions.deny // [])) | unique)
+        | .hooks = (.hooks // {})
+        | .hooks.PreToolUse = (
+            ((.hooks.PreToolUse // []) | map(select(
+              (([.hooks[]?.command] | join(" "))) as $c
+              | (((($c | test("Use trash instead of rm -rf"))) or (($c | test("not direct push to main"))))) | not
+            )))
+            + ($t.hooks.PreToolUse // [])
+          )
+      ' "$settings" > "$merged" 2>/dev/null; then
+      mv "$merged" "$settings"
+      echo "  merged Trail of Bits keys into settings.json"
+    else
+      rm -f "$merged"
+      echo "  WARNING: settings.json merge failed; left unchanged"
+    fi
+  else
+    echo "  jq not found; skipping settings.json merge"
+  fi
+else
+  echo "  WARNING: failed to fetch Trail of Bits settings.json; continuing"
+fi
+rm -f "$tob_settings"
+
+say "Appending Trail of Bits standards to ~/.claude/CLAUDE.md ..."
+tob_md_marker="Trail of Bits global standards (appended by laptop setup"
+claude_md="$HOME/.claude/CLAUDE.md"
+if [ -f "$claude_md" ] && grep -qF "$tob_md_marker" "$claude_md"; then
+  echo "  Trail of Bits section already present; skipping"
+else
+  tob_md="$(mktemp)"
+  if curl -fsSL "$tob_base/claude-md-template.md" -o "$tob_md"; then
+    {
+      printf '\n\n---\n\n<!-- >>> %s; edit or remove freely) >>> -->\n\n' "$tob_md_marker"
+      cat "$tob_md"
+    } >> "$claude_md"
+    echo "  appended Trail of Bits standards to CLAUDE.md"
+  else
+    echo "  WARNING: failed to fetch claude-md-template.md; continuing"
+  fi
+  rm -f "$tob_md"
+fi
+
+# 14. SSH/git identities from the private 1Password manifest
 sh "$SCRIPT_DIR/provision-identities.sh"
 
 say "Personal setup complete."
