@@ -41,7 +41,6 @@ cask "brave-browser"
 cask "granola"
 cask "claude"
 cask "obsidian"
-cask "lm-studio"
 cask "blender"
 cask "firefox"
 cask "flycut"
@@ -61,7 +60,6 @@ cask "zoom"
 #App store apps
 mas 'DaisyDisk', id: 411643860
 mas 'Haskell', id: 841285201
-mas 'iBooks Author', id: 490152466
 mas 'OmniGraffle', id: 1142578753 
 mas 'Slack', id: 803453959
 mas 'The Unarchiver', id: 425424353
@@ -70,26 +68,11 @@ mas '1Password for Safari', id: 1569813296
 mas 'Chordio', id: 1580214821
 mas 'Dropover', id: 1355679052
 mas 'forScore', id: 363738376
-mas 'Keynote', id: 409183694
 mas 'Kindle', id: 302584613
 mas 'Logic Pro', id: 634148309
 mas 'MindNode Classic', id: 1289197285
-mas 'Numbers', id: 409203825
-mas 'Pages', id: 409201541
-mas 'TestFlight', id: 899247664
 mas 'Xcode', id: 497799835
 EOF
-
-# Hyperkit needs the Xcode toolchain, so install it only after Xcode (from the
-# App Store list above) has been installed.
-fancy_echo "Installing hyperkit (requires Xcode) ..."
-if [ -d "/Applications/Xcode.app" ]; then
-  sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer 2>/dev/null || true
-  sudo xcodebuild -license accept 2>/dev/null || true
-  brew install hyperkit || fancy_echo "WARNING: hyperkit install failed"
-else
-  fancy_echo "Skipping hyperkit: /Applications/Xcode.app not found"
-fi
 
 fancy_echo "Installing language runtimes via mise ..."
 KERL_CONFIGURE_OPTIONS="--without-javac --with-ssl=$(brew --prefix openssl@3)"
