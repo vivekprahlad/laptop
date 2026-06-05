@@ -132,7 +132,23 @@ backup "$HOME/.gitconfig"
 cp "$SCRIPT_DIR/git/gitconfig" "$HOME/.gitconfig"
 echo "  installed ~/.gitconfig"
 
-# 10. SSH/git identities from the private 1Password manifest
+# 10. nWave — AI coding agents wired into Claude Code (uv is in the brew bundle)
+say "Installing nWave (nwave-ai) ..."
+if command -v uv >/dev/null 2>&1; then
+  if uv tool list 2>/dev/null | grep -q '^nwave-ai '; then
+    echo "  nwave-ai already installed; skipping"
+  else
+    uv tool install nwave-ai
+  fi
+  # Wire nWave into Claude Code (idempotent; safe to re-run)
+  if command -v nwave-ai >/dev/null 2>&1; then
+    nwave-ai install
+  fi
+else
+  echo "  uv not found; skipping nWave (install uv via the brew bundle first)"
+fi
+
+# 11. SSH/git identities from the private 1Password manifest
 sh "$SCRIPT_DIR/provision-identities.sh"
 
 say "Personal setup complete."
