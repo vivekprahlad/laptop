@@ -273,6 +273,8 @@ if curl -fsSL "$tob_base/settings.json" -o "$tob_settings"; then
     # Set ToB's opinionated scalars + statusLine; union the deny rules; merge env
     # with existing keys winning (preserves PATH); strip any previously-injected
     # ToB Bash guard hooks (by message) then re-append, so re-runs don't stack.
+    # The "not direct push to main" guard is dropped on re-append: this is a
+    # personal repo where pushing straight to main is the intended workflow.
     if jq --slurpfile tob "$tob_settings" '
         ($tob[0]) as $t
         | .cleanupPeriodDays = $t.cleanupPeriodDays
@@ -288,7 +290,10 @@ if curl -fsSL "$tob_base/settings.json" -o "$tob_settings"; then
               (([.hooks[]?.command] | join(" "))) as $c
               | (((($c | test("Use trash instead of rm -rf"))) or (($c | test("not direct push to main"))))) | not
             )))
-            + ($t.hooks.PreToolUse // [])
+            + (($t.hooks.PreToolUse // []) | map(select(
+              (([.hooks[]?.command] | join(" "))) as $c
+              | ($c | test("not direct push to main")) | not
+            )))
           )
       ' "$settings" > "$merged" 2>/dev/null; then
       mv "$merged" "$settings"
