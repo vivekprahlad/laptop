@@ -154,13 +154,24 @@ fi
 # Runs the upstream one-liner installer. Skills are fetched via `npx skills`
 # (Node is installed earlier by the mac script), and CLAUDE.md/commands/agents
 # are downloaded directly. The installer backs up anything it replaces. We run
-# it after nWave so this config has the final say in ~/.claude. Guarded so a
-# network/npx failure doesn't abort the remaining setup.
+# it after nWave so citypaul's CLAUDE.md/commands/agents win — but note that
+# `npx skills` snapshots ~/.claude/skills/ and re-materializes ONLY its tracked
+# set, which DELETES nWave's skills installed in step 10. Step 11b re-applies
+# nWave to restore them. Guarded so a network/npx failure doesn't abort setup.
 say "Installing citypaul/.dotfiles Claude config ..."
 if curl -fsSL https://raw.githubusercontent.com/citypaul/.dotfiles/main/install-claude.sh | bash; then
   echo "  citypaul Claude config installed"
 else
   echo "  WARNING: citypaul Claude config install failed; continuing"
+fi
+
+# 11b. Re-apply nWave skills clobbered by step 11's `npx skills`.
+# `npx skills` owns ~/.claude/skills/ and drops anything outside its tracked set,
+# including the nWave skills installed in step 10. Re-running the nWave installer
+# re-materializes them so both skill sets coexist. Idempotent; guarded.
+if command -v nwave-ai >/dev/null 2>&1; then
+  say "Re-applying nWave skills (clobbered by npx skills in step 11) ..."
+  nwave-ai install || echo "  WARNING: nWave re-apply failed; run 'nwave-ai install' manually"
 fi
 
 # 12. context-mode Claude Code plugin (mksglu/context-mode)
