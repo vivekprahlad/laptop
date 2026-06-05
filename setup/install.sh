@@ -1,7 +1,8 @@
 #!/bin/sh
-# Personal environment setup: Claude Code, Pencil (pencil.dev), Starship,
-# MesloLGS NF font, tmux (config + Catppuccin plugin), Hammerspoon config,
-# iTerm2 colours/settings, a clean ~/.zshrc, a global git config, and
+# Personal environment setup: Claude Code, the citypaul/.dotfiles Claude config
+# (CLAUDE.md + skills + commands + agents), Pencil (pencil.dev),
+# Starship, MesloLGS NF font, tmux (config + Catppuccin plugin), Hammerspoon
+# config, iTerm2 colours/settings, a clean ~/.zshrc, a global git config, and
 # SSH/git identities provisioned from 1Password.
 #
 # Idempotent and non-destructive: each step skips work already done and backs up
@@ -148,7 +149,20 @@ else
   echo "  uv not found; skipping nWave (install uv via the brew bundle first)"
 fi
 
-# 11. SSH/git identities from the private 1Password manifest
+# 11. citypaul/.dotfiles Claude config (CLAUDE.md + skills + commands + agents)
+# Runs the upstream one-liner installer. Skills are fetched via `npx skills`
+# (Node is installed earlier by the mac script), and CLAUDE.md/commands/agents
+# are downloaded directly. The installer backs up anything it replaces. We run
+# it after nWave so this config has the final say in ~/.claude. Guarded so a
+# network/npx failure doesn't abort the remaining setup.
+say "Installing citypaul/.dotfiles Claude config ..."
+if curl -fsSL https://raw.githubusercontent.com/citypaul/.dotfiles/main/install-claude.sh | bash; then
+  echo "  citypaul Claude config installed"
+else
+  echo "  WARNING: citypaul Claude config install failed; continuing"
+fi
+
+# 12. SSH/git identities from the private 1Password manifest
 sh "$SCRIPT_DIR/provision-identities.sh"
 
 say "Personal setup complete."

@@ -34,7 +34,7 @@ brew "ant"
 brew "maven"
 
 # Local LLMs
-brew "ollama", restart_service: :changed
+cask "ollama"
 
 # Data stores
 #brew "mysql"
