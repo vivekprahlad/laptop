@@ -1,0 +1,54 @@
+# Generic global git config — NO identity here.
+# Identity (name/email/signingkey) is set per ~/Work/<context> via the generated
+# include file below, which is produced by setup/provision-identities.sh from a
+# private 1Password manifest. With useConfigOnly + no default, committing outside
+# a configured context fails fast on purpose.
+
+[user]
+	useConfigOnly = true
+
+[init]
+	defaultBranch = main
+
+[pull]
+	rebase = true
+[branch]
+	autoSetupRebase = always
+	sort = -committerdate
+[push]
+	default = simple
+	autoSetupRemote = true
+[fetch]
+	prune = true
+[rebase]
+	autoStash = true
+	updateRefs = true
+	autosquash = true
+[merge]
+	conflictStyle = zdiff3
+[diff]
+	algorithm = histogram
+	colorMoved = default
+[commit]
+	verbose = true
+	gpgsign = true
+[tag]
+	gpgsign = true
+
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
+	allowedSignersFile = ~/.config/git/allowed_signers
+
+[core]
+	excludesfile = ~/.gitignore_global
+	editor = vim
+
+[alias]
+	cb = rev-parse --symbolic-full-name --abbrev-ref HEAD
+	gup = !git fetch --prune origin && git rebase -r origin/$(git cb)
+
+# Per-context identities (generated; safe if the file is absent)
+[include]
+	path = ~/.config/git/work-includes

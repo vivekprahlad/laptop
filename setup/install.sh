@@ -1,7 +1,8 @@
 #!/bin/sh
 # Personal environment setup: Claude Code, Pencil (pencil.dev), Starship,
 # MesloLGS NF font, tmux (config + Catppuccin plugin), Hammerspoon config,
-# iTerm2 colours/settings, and a clean ~/.zshrc.
+# iTerm2 colours/settings, a clean ~/.zshrc, a global git config, and
+# SSH/git identities provisioned from 1Password.
 #
 # Idempotent and non-destructive: each step skips work already done and backs up
 # anything it replaces (as <file>.backup.<timestamp>). Safe to re-run.
@@ -124,5 +125,14 @@ if [ -d "$SCRIPT_DIR/hammerspoon" ]; then
   cp -R "$SCRIPT_DIR/hammerspoon/." "$HOME/.hammerspoon/"
   echo "  installed ~/.hammerspoon"
 fi
+
+# 9. Global git config (generic — per-context identity is added in step 10)
+say "Installing global git config ..."
+backup "$HOME/.gitconfig"
+cp "$SCRIPT_DIR/git/gitconfig" "$HOME/.gitconfig"
+echo "  installed ~/.gitconfig"
+
+# 10. SSH/git identities from the private 1Password manifest
+sh "$SCRIPT_DIR/provision-identities.sh"
 
 say "Personal setup complete."
