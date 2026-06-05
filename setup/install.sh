@@ -1,7 +1,7 @@
 #!/bin/sh
 # Personal environment setup: Claude Code, Pencil (pencil.dev), Starship,
-# MesloLGS NF font, tmux (config + Catppuccin plugin), iTerm2 colours/settings,
-# and a clean ~/.zshrc.
+# MesloLGS NF font, tmux (config + Catppuccin plugin), Hammerspoon config,
+# iTerm2 colours/settings, and a clean ~/.zshrc.
 #
 # Idempotent and non-destructive: each step skips work already done and backs up
 # anything it replaces (as <file>.backup.<timestamp>). Safe to re-run.
@@ -114,6 +114,15 @@ else
   fi
   hdiutil detach "$pencil_mnt" -quiet
   rm -f "$pencil_dmg"
+fi
+
+# 8. Hammerspoon config (the Hammerspoon app is installed via the brew bundle)
+say "Configuring Hammerspoon ..."
+if [ -d "$SCRIPT_DIR/hammerspoon" ]; then
+  backup "$HOME/.hammerspoon"
+  mkdir -p "$HOME/.hammerspoon"
+  cp -R "$SCRIPT_DIR/hammerspoon/." "$HOME/.hammerspoon/"
+  echo "  installed ~/.hammerspoon"
 fi
 
 say "Personal setup complete."
