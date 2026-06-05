@@ -16,7 +16,6 @@ brew "mr"
 brew "mvn"
 brew "openssl"
 brew "wget"
-brew "youtube-dl"
 brew "xz"
 brew "z"
 brew "zoxide"
@@ -90,13 +89,9 @@ brew uninstall postgresql@14
 brew uninstall redis
 
 # --- Personal environment setup (Claude Code, Starship, fonts, iTerm, clean zsh) ---
-# Locate this repo via the ~/.laptop.local symlink, then run setup/install.sh.
-laptop_local="$HOME/.laptop.local"
-if [ -L "$laptop_local" ]; then
-  repo_dir="$(cd "$(dirname "$(readlink "$laptop_local")")" && pwd)"
-else
-  repo_dir="$(cd "$(dirname "$laptop_local")" && pwd)"
-fi
+# Use LAPTOP_DIR exported by the mac script (the cloned repo); fall back to the
+# directory of whatever sourced this file.
+repo_dir="${LAPTOP_DIR:-$(cd "$(dirname "$0")" && pwd)}"
 if [ -f "$repo_dir/setup/install.sh" ]; then
   sh "$repo_dir/setup/install.sh"
 else

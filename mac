@@ -188,8 +188,16 @@ gem_install_or_update "parity"
 fancy_echo "Installing latest Node ..."
 mise use --global node@latest
 
-if [ -f "$HOME/.laptop.local" ]; then
+# Apply customizations from laptop.local. Prefer the copy next to this script
+# (the cloned repo) so they run without needing a ~/.laptop.local symlink.
+LAPTOP_DIR="$(cd "$(dirname "$0")" && pwd)"
+export LAPTOP_DIR
+if [ -f "$LAPTOP_DIR/laptop.local" ]; then
+  fancy_echo "Running your customizations from $LAPTOP_DIR/laptop.local ..."
+  # shellcheck disable=SC1090,SC1091
+  . "$LAPTOP_DIR/laptop.local"
+elif [ -f "$HOME/.laptop.local" ]; then
   fancy_echo "Running your customizations from ~/.laptop.local ..."
-  # shellcheck disable=SC1091
+  # shellcheck disable=SC1090,SC1091
   . "$HOME/.laptop.local"
 fi
