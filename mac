@@ -153,10 +153,6 @@ brew "libyaml" # should come after openssl
 brew "coreutils"
 brew "yarn"
 cask "gpg-suite-no-mail"
-
-# Databases
-#brew "postgresql@14", restart_service: :changed
-#brew "redis", restart_service: :changed
 EOF
 
 fancy_echo "Update heroku binary ..."

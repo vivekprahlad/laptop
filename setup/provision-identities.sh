@@ -62,7 +62,15 @@ echo "$manifest" | jq -c '.contexts[]' | while IFS= read -r ctx; do
   email=$(printf '%s' "$ctx" | jq -r '.email')
   pub=$(printf '%s' "$ctx"   | jq -r '.pub')
 
-  op read "op://$vault/$item/public key" > "$HOME/.ssh/$pub"
+  # Fetch the public key via `op item get` (title/vault as args) rather than an
+  # op:// reference, so item titles with '@' or spaces resolve correctly.
+  pubkey="$(op item get "$item" --vault "$vault" --format json \
+    | jq -r '.fields[] | select(.id=="public_key") | .value')"
+  if [ -z "$pubkey" ]; then
+    echo "  ERROR: no public key for item '$item' in vault '$vault'" >&2
+    exit 1
+  fi
+  printf '%s\n' "$pubkey" > "$HOME/.ssh/$pub"
   chmod 644 "$HOME/.ssh/$pub"
 
   mkdir -p "$HOME/Work/$dir"

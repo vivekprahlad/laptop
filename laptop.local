@@ -79,11 +79,8 @@ KERL_CONFIGURE_OPTIONS="--without-javac --with-ssl=$(brew --prefix openssl@3)"
 export KERL_CONFIGURE_OPTIONS
 mise use --global \
   clojure@latest erlang@latest elixir@latest go@latest gradle@latest \
-  ghc@latest haxe@latest java@latest kubectl@latest leiningen@latest \
+  haxe@latest java@latest kubectl@latest leiningen@latest \
   mysql@latest python@latest terraform@latest
-
-brew uninstall postgresql@14
-brew uninstall redis
 
 # --- Personal environment setup (Claude Code, Starship, fonts, iTerm, clean zsh) ---
 # Use LAPTOP_DIR exported by the mac script (the cloned repo); fall back to the
