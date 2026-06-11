@@ -44,6 +44,7 @@ agent_toml="$HOME/.config/1Password/ssh/agent.toml"
 # directory/host key selection here — git pins the right key per repo via
 # core.sshCommand (written per context below).
 agent_socket=$(echo "$manifest" | jq -r '.agent_socket')
+git_name=$(echo "$manifest" | jq -r '.name // empty')   # shared git user.name (optional)
 [ -e "$HOME/.ssh/config" ] && mv "$HOME/.ssh/config" "$HOME/.ssh/config.backup.$(date +%Y-%m-%d_%H-%M-%S)"
 {
   printf '# Managed by setup/provision-identities.sh — do not edit by hand.\n'
@@ -75,7 +76,9 @@ echo "$manifest" | jq -c '.contexts[]' | while IFS= read -r ctx; do
 
   mkdir -p "$HOME/Work/$dir"
   {
-    printf '[user]\n\temail = %s\n\tsigningkey = ~/.ssh/%s\n' "$email" "$pub"
+    printf '[user]\n'
+    [ -n "$git_name" ] && printf '\tname = %s\n' "$git_name"
+    printf '\temail = %s\n\tsigningkey = ~/.ssh/%s\n' "$email" "$pub"
     printf '[core]\n\tsshCommand = ssh -i ~/.ssh/%s -o IdentitiesOnly=yes\n' "$pub"
   } > "$HOME/Work/$dir/.gitconfig"
 

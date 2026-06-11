@@ -1,11 +1,11 @@
-# Generic global git config — shared name only, NO email/signingkey here.
-# Email/signingkey are set per ~/Work/<context> via the generated include file
-# below, which is produced by setup/provision-identities.sh from a private
-# 1Password manifest. With useConfigOnly + no default email, committing outside
-# a configured context still fails fast on purpose.
+# Generic global git config — NO identity here.
+# Name/email/signingkey are set per ~/Work/<context> via the generated include
+# file below, produced by setup/provision-identities.sh from a private 1Password
+# manifest (the shared name comes from the manifest's top-level `name`). With
+# useConfigOnly + no default identity, committing outside a configured context
+# fails fast on purpose.
 
 [user]
-	name = Vivek Prahlad
 	useConfigOnly = true
 
 [init]
