@@ -128,7 +128,7 @@ if [ -d "$SCRIPT_DIR/hammerspoon" ]; then
   echo "  installed ~/.hammerspoon"
 fi
 
-# 9. Global git config (generic — per-context identity is added in step 10)
+# 9. Global git config (generic — per-context identity is added in step 14)
 say "Installing global git config ..."
 backup "$HOME/.gitconfig"
 cp "$SCRIPT_DIR/git/gitconfig" "$HOME/.gitconfig"
