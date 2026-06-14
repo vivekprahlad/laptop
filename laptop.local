@@ -1,4 +1,9 @@
 #!/bin/sh
+
+# Trust third-party taps so brew bundle does not skip them when
+# HOMEBREW_REQUIRE_TAP_TRUST is in effect.
+brew trust --tap gastownhall/beads
+
 brew bundle --file=- <<EOF
 
 # Utilities
