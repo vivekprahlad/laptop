@@ -174,15 +174,15 @@ append_to_zshrc 'eval "$(mise activate zsh)"' 1
 # shellcheck disable=SC1090
 eval "$(mise activate bash --shims)"
 
-fancy_echo "Installing latest Ruby ..."
-mise use --global ruby@latest
+fancy_echo "Installing Ruby ..."
+mise use --global ruby@4.0.5
 gem update --system
 number_of_cores=$(sysctl -n hw.ncpu)
 bundle config --global jobs $((number_of_cores - 1))
 gem_install_or_update "parity"
 
-fancy_echo "Installing latest Node ..."
-mise use --global node@latest
+fancy_echo "Installing Node ..."
+mise use --global node@24.4.1
 
 # Apply customizations from laptop.local. Prefer the copy next to this script
 # (the cloned repo) so they run without needing a ~/.laptop.local symlink.

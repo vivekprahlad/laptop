@@ -85,9 +85,9 @@ fancy_echo "Installing language runtimes via mise ..."
 KERL_CONFIGURE_OPTIONS="--without-javac --with-ssl=$(brew --prefix openssl@3)"
 export KERL_CONFIGURE_OPTIONS
 mise use --global \
-  clojure@latest erlang@latest elixir@latest go@latest gradle@latest \
-  haxe@latest java@latest kubectl@latest leiningen@latest \
-  mysql@latest python@latest terraform@latest
+  clojure@1.12.5.1654 erlang@29.0.1 elixir@1.20.1-otp-29 go@1.26.4 gradle@9.5.1 \
+  haxe@4.3.7 java@26.0.1 kubectl@1.36.1 leiningen@2.13.0 \
+  mysql@8.0.33 python@3.14.6 terraform@1.15.5
 
 # --- Personal environment setup (Claude Code, Starship, fonts, iTerm, clean zsh) ---
 # Use LAPTOP_DIR exported by the mac script (the cloned repo); fall back to the
