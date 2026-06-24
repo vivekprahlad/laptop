@@ -41,7 +41,7 @@ brew "ant"
 brew "maven"
 
 # Local LLMs
-cask "ollama"
+cask "ollama-app"
 
 # Data stores
 #brew "mysql"
